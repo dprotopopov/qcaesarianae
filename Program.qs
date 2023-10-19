@@ -8,9 +8,9 @@ namespace qcaesarianae {
     open Microsoft.Quantum.Logical;
     open Microsoft.Quantum.Diagnostics;
     
-
-    // увеличение на единицу числового значения в массиве кубитов (рассматриваемых как регистр)
-    // то есть трансформация вида |k> -> |k+1>
+    /// # Описание
+    /// увеличение на единицу числового значения в массиве кубитов (рассматриваемых как регистр)
+    /// то есть трансформация вида |k> -> |k+1>
     operation Inc(target: Qubit[]) : Unit is Ctl {
         let n = Length(target);
         for idx in 1..n {
@@ -18,8 +18,9 @@ namespace qcaesarianae {
         } 
     }
 
-    // увеличение на указанную величину числового значения в массиве кубитов (рассматриваемых как регистр)
-    // то есть трансформация вида |k> -> |k+value>
+    /// # Описание
+    /// увеличение на указанную величину числового значения в массиве кубитов (рассматриваемых как регистр)
+    /// то есть трансформация вида |k> -> |k+value>
     operation Add(target: Qubit[], value: Int) : Unit {
         let n = Length(target);
         let bools = IntAsBoolArray(value, n);
@@ -50,8 +51,9 @@ namespace qcaesarianae {
         }
     }
     
-    // измерение значений (коллапсирование) кубитов в массиве (который рассматриваем как один регистр)
-    // и возврат числа (равного полученной двоичной последовательности)
+    /// # Описание
+    /// измерение значений (коллапсирование) кубитов в массиве (который рассматриваем как один регистр)
+    /// и возврат числа (равного полученной двоичной последовательности)
     operation Measure(qubits: Qubit[]) : Int {
         let results = ForEach(M, qubits);
         let bools = ResultArrayAsBoolArray(results);
@@ -59,7 +61,8 @@ namespace qcaesarianae {
         return i;
     }
 
-    // генерация последовательности со случайными символами алфавита (с учётом ограничений)
+    /// # Описание
+    /// генерация последовательности со случайными символами алфавита (с учётом ограничений)
     operation RandomPlain(n: Int, l: Int) : Int[] {
         mutable plain = [0, size = l];
         use qubits = Qubit[n-1] { // !!! здесь мы ограничили набор входных символов - только числа без старшего разряда
@@ -72,7 +75,8 @@ namespace qcaesarianae {
         return plain;
     }
 
-    // генерация случайного ключа для шифра цезаря
+    /// # Описание
+    /// генерация случайного ключа
     operation RandomKey(n: Int) : Int {
         use qubits = Qubit[n] {
             ApplyToEach(H, qubits);
@@ -82,8 +86,9 @@ namespace qcaesarianae {
         }
     }
 
-    // получение шифрованного текста из открытого на указанном ключе (key)
-    // соответсвенно, для обратного преобазования используем эту же функцию, но с отрицательным ключем (-key)
+    /// # Описание
+    /// получение шифрованного текста из открытого на указанном ключе (key)
+    /// соответсвенно, для обратного преобазования используем эту же функцию, но с отрицательным ключем (-key)
     operation Encrypt(n: Int, plain: Int[], key: Int) : Int[] {
         let l = Length(plain);
         mutable m = 1;
@@ -97,7 +102,8 @@ namespace qcaesarianae {
         return cipher;
     }
 
-    // вспомогательный метод для копирования значений массива кубитов
+    /// # Описание
+    /// вспомогательный метод для копирования значений массива кубитов
     operation Copy(source: Qubit[], target: Qubit[]) : Unit {
         let n = Length(source);
         for i in 0..(n-1) {
@@ -105,17 +111,19 @@ namespace qcaesarianae {
         }
     }
 
-    // реализация шифра цезаря (для одного символа) на кубитах
-    // то есть, для возможных вариантов ключа key имеем возможные варианты выхода
-    // и, соответственно, наоборот - при использовании отрицательного значения ключа (-key)
-    // получим возможные варианты открытого текста, для заданного шифросимвола
+    /// # Описание
+    /// реализация шифра цезаря (для одного символа) на кубитах
+    /// то есть, для возможных вариантов ключа key имеем возможные варианты выхода
+    /// и, соответственно, наоборот - при использовании отрицательного значения ключа (-key)
+    /// получим возможные варианты открытого текста, для заданного шифросимвола
     operation EncryptChar(n: Int, ch: Int, cipher: Qubit[], key: Qubit[]) : Unit {
         Copy(key, cipher);
         Add(cipher, ch);
     } 
 
-    // подсчёт количества "неправильных" символов, полученных в результате попытки дешифрования
-    // шифротекста в открытый текст на указанном ключе
+    /// # Описание
+    /// подсчёт количества "неправильных" символов, полученных в результате попытки дешифрования
+    /// шифротекста в открытый текст на указанном ключе
     operation CountErrorsOnDecrypt(n: Int, cipher: Int[], key: Qubit[], error: Qubit[]) : Unit {
         // Для шифра Цезаря plain = cipher - key = chiper + (-key)
         // а поскольку мы реализовали только метод Add, то изменим знак числа key
@@ -138,8 +146,9 @@ namespace qcaesarianae {
         Inc(key);
     }
 
-    // реализация оракла, необходимого для алгоритма гровера
-    // соответственно, мы считаем, что правильное решение - это то, которое не имеет ошибок
+    /// # Описание
+    /// реализация оракла, необходимого для алгоритма гровера
+    /// соответственно, мы считаем, что правильное решение - это то, которое не имеет ошибок
     operation NoErrorOracle(n: Int, cipher: Int[], key: Qubit[], target: Qubit): Unit {
         let l = Length(cipher);
         let k = BitSizeI(l);
@@ -155,45 +164,50 @@ namespace qcaesarianae {
         }
     }
 
-    // шаг для алгоритма гровера
-    // отражение от решения    
-    operation ReflectAboutSolution(oracle : (Qubit[], Qubit) => Unit, register : Qubit[], target: Qubit) : Unit {
-        oracle(register, target);
-    }
-
-    // шаг для алгоритма гровера
-    // отражение от H|0>
-    operation ReflectAboutUniform(register : Qubit[], target: Qubit) : Unit {
-        ApplyToEach(H, register);
-        ApplyToEach(X, register);
-        Controlled X(register, target);
-        ApplyToEach(X, register);
-        ApplyToEach(H, register);
-    }
-
-    // алгоритм гровера
-    operation RunGroversSearch(register : Qubit[], oracle : (Qubit[], Qubit) => Unit, iterations : Int) : Unit { // Prepare register into uniform superposition.
-        ApplyToEach(H, register);
-        use (target) = (Qubit()) {
-            X(target);
-            H(target);
-            for _ in 1 .. iterations {
-                ReflectAboutSolution(oracle, register, target);
-                ReflectAboutUniform(register, target);
+    /// # Описание
+    /// шаг для алгоритма гровера
+    /// отражение от решения    
+    operation ReflectAboutSolution(oracle : (Qubit[], Qubit) => Unit, register : Qubit[]) : Unit {
+        use (target)=(Qubit()){
+            within {
+                X(target);
+                H(target);
             }
-            Reset(target);
+            apply {
+                oracle(register, target);
+            }
         }
     }
 
+    /// # Описание
+    /// шаг для алгоритма гровера
+    /// отражение от H|0>
+    operation ReflectAboutUniform(inputQubits : Qubit[]) : Unit {
+        within {
+            ApplyToEachA(H, inputQubits);
+            ApplyToEachA(X, inputQubits);
+        }
+        apply {
+            Controlled Z(Most(inputQubits), Tail(inputQubits));
+        }
+    }
+
+    /// # Описание
+    /// алгоритм гровера
+    operation RunGroversSearch(register : Qubit[], oracle : (Qubit[], Qubit) => Unit, iterations : Int) : Unit {
+        ApplyToEach(H, register);
+        for _ in 1 .. iterations {
+            ReflectAboutSolution(oracle, register);
+            ReflectAboutUniform(register);
+        }
+    }
 
     @EntryPoint()
-    operation Main() : Unit {
+    operation Main(n: Int, l: Int) : Unit {
         Message("Hello quantum world!");
 
         let tests = 1;
         for _ in 1..tests {
-            let n = 4;
-            let l = 256;
             mutable m = 1;
             for _ in 1..n {
                 set m *= 2;
@@ -205,6 +219,64 @@ namespace qcaesarianae {
             Message($"key = {key} cipher = {cipher}");
 
             let noErrorOracle = NoErrorOracle(n, cipher, _, _);
+
+            let groverIterations = Round(PI()/4.0*Sqrt(IntAsDouble(m)));
+            Message($"GroversSearch: groverIterations = {groverIterations}?");
+
+            mutable isSuccess = false;
+
+            // применяем алгоритм гровера
+            // указываем точное число шагов у алгоритма
+            set isSuccess = false;
+            repeat {
+                use (qubits, oracle) = (Qubit[n], Qubit()){
+                    let iterations = Round(PI()/4.0*Sqrt(IntAsDouble(m)));
+                    RunGroversSearch(qubits, noErrorOracle, iterations);
+                    noErrorOracle(qubits, oracle);
+                    let hacked = Measure(qubits);
+                    Message($"GroversSearch: iterations = {iterations} ... {key}=={hacked} ... oracle = {M(oracle)}");
+                    if(M(oracle)==One){
+                        set isSuccess = true;
+                        let plain = Encrypt(n, cipher, m-hacked);
+                        Message($"GroversSearch: Success!!! {key}=={hacked} ... plain = {plain}");
+                    }
+                    ResetAll(qubits);
+                    Reset(oracle);
+                }
+            }
+            until(isSuccess);
+
+            // применяем алгоритм гровера
+            // точное число шагов у алгоритма мы не знаем (знаем только оценку)
+            // поэтому запускаем с разными значениями итераций
+            // Повторение итераций после groverIterations сопровождается снижением этой вероятности
+            // вплоть до практически нулевой вероятности успеха на итерации 2*groverIterations.
+            // После этого вероятность снова возрастает до итерации 3*groverIterations и т. д.
+            // В практических приложениях обычно неизвестно, сколько решений имеет ваша задача, 
+            // прежде чем вы решите ее. Эффективной стратегией для решения этой проблемы является 
+            // "предположение" количества решений путем постепенного увеличения степени двойки (т. е. 1,2,4,8,...).
+            // Одно из этих предположений будет достаточно близким для того, чтобы алгоритм нашел решение
+            // со средним числом итераций около SQRT(2^n/S) 
+
+            mutable currenIterations = 0;
+            set isSuccess = false;
+            repeat{
+                set currenIterations = currenIterations+1;
+                use (qubits, oracle) = (Qubit[n], Qubit()){
+                    RunGroversSearch(qubits, noErrorOracle, currenIterations);
+                    noErrorOracle(qubits, oracle);
+                    let hacked = Measure(qubits);
+                    Message($"GroversSearch: iterations = {currenIterations} ... {key}=={hacked} ... oracle = {M(oracle)}");
+                    if(M(oracle)==One){
+                        set isSuccess = true;
+                        let plain = Encrypt(n, cipher, m-hacked);
+                        Message($"GroversSearch: Success!!! {key}=={hacked} ... plain = {plain}");
+                    }
+                    ResetAll(qubits);
+                    Reset(oracle);
+                }
+            }
+            until (isSuccess);
 
             // проверка оракла
             // прогоним его через брутто-форс
@@ -222,32 +294,6 @@ namespace qcaesarianae {
                     Reset(oracle);
                 }
             }
-
-            // применяем алгорим гровера
-            // точное число шагов у алгорима мы не знаем (знаем только оценку)
-            // поэтому запускаем с разными значениями итераций
-            let maxIterations = Round(PI()/4.0*Sqrt(IntAsDouble(m)));
-            Message($"GroversSearch: maxIterations = {maxIterations}?");
-
-            mutable iterations = 0;
-            mutable isSuccess = false;
-            repeat{
-                set iterations = iterations+1;
-                use (qubits, oracle) = (Qubit[n], Qubit()){
-                    RunGroversSearch(qubits, noErrorOracle, iterations);
-                    noErrorOracle(qubits, oracle);
-                    let hacked = Measure(qubits);
-                    Message($"GroversSearch: iterations = {iterations} ... key = {key} ... hacked = {hacked} ... oracle = {M(oracle)}");
-                    if(M(oracle)==One){
-                        set isSuccess = true;
-                        let plain = Encrypt(n, cipher, m-hacked);
-                        Message($"GroversSearch: Success!!! {key}=={hacked} ... plain = {plain}");
-                    }
-                    ResetAll(qubits);
-                    Reset(oracle);
-                }
-            }
-            until (isSuccess);
         }
     }
 }
