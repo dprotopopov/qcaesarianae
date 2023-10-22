@@ -56,8 +56,7 @@ namespace qcaesarianae {
     /// и возврат числа (равного полученной двоичной последовательности)
     operation Measure(qubits: Qubit[]) : Int {
         let results = ForEach(M, qubits);
-        let bools = ResultArrayAsBoolArray(results);
-        let i = BoolArrayAsInt(bools);
+        let i = ResultArrayAsInt(results);
         return i;
     }
 
@@ -91,10 +90,7 @@ namespace qcaesarianae {
     /// соответсвенно, для обратного преобазования используем эту же функцию, но с отрицательным ключем (-key)
     operation Encrypt(n: Int, plain: Int[], key: Int) : Int[] {
         let l = Length(plain);
-        mutable m = 1;
-        for i in 1..n {
-            set m *= 2;
-        }
+        let m = 2^n;
         mutable cipher = [0, size = l];
         for idx in 0..l-1 {
             set cipher w/= idx <- (plain[idx]+key) % m;
@@ -208,10 +204,7 @@ namespace qcaesarianae {
 
         let tests = 1;
         for _ in 1..tests {
-            mutable m = 1;
-            for _ in 1..n {
-                set m *= 2;
-            }
+            let m = 2^n;
             Message($"n = {n} ... l = {l} ... m = {m}");
 
             let key = RandomKey(n);
