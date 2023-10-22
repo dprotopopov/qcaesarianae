@@ -130,10 +130,7 @@ NB. Очевидно, что подобные рассуждения можно 
     /// соответсвенно, для обратного преобазования используем эту же функцию, но с отрицательным ключем (-key)
     operation Encrypt(n: Int, plain: Int[], key: Int) : Int[] {
         let l = Length(plain);
-        mutable m = 1;
-        for i in 1..n {
-            set m *= 2;
-        }
+        let  m = 2^n;
         mutable cipher = [0, size = l];
         for idx in 0..l-1 {
             set cipher w/= idx <- (plain[idx]+key) % m;
@@ -427,10 +424,7 @@ namespace qcaesarianae {
     /// соответсвенно, для обратного преобазования используем эту же функцию, но с отрицательным ключем (-key)
     operation Encrypt(n: Int, plain: Int[], key: Int) : Int[] {
         let l = Length(plain);
-        mutable m = 1;
-        for i in 1..n {
-            set m *= 2;
-        }
+        let m = 2^n;
         mutable cipher = [0, size = l];
         for idx in 0..l-1 {
             set cipher w/= idx <- (plain[idx]+key) % m;
